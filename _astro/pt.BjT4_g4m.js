@@ -1,0 +1,1 @@
+import e from"./pt-BR.BrSjHTYN.js";export{e as default};

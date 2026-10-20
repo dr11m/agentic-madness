@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <title>Агентное безумие — центрированный тёмный аватар</title>
+  <rect id="background" width="1080" height="1080" rx="230" fill="#101112"/>
+  <g id="logo" transform="translate(-44.5 54)">
+    <g id="letter-left" fill="none" stroke="#FCFCF8" stroke-linecap="round" stroke-linejoin="round">
+      <path id="letter-left-main" d="M466 519 C458 437 397 395 323 411 C242 429 211 517 242 593 C274 669 371 692 434 638 C484 595 491 511 457 456 C424 405 349 392 286 429 C226 465 211 548 248 614" stroke-width="53"/>
+      <path id="letter-left-tail" d="M434 638 C452 661 477 674 507 671" stroke-width="46"/>
+    </g>
+    <path id="letter-right" d="M674 430 C618 500 626 610 700 669 C780 733 897 689 926 586 C956 482 890 383 792 378 C743 375 701 394 674 430 M760 382 C805 323 868 287 939 274" fill="none" stroke="#FCFCF8" stroke-width="59" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="symbol-chevron" d="M327 509 L373 540 L327 571" fill="none" stroke="#25FF4F" stroke-width="23" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="symbol-underscore" d="M782 550 H838" fill="none" stroke="#FCFCF8" stroke-width="23" stroke-linecap="round"/>
+  </g>
+</svg>
