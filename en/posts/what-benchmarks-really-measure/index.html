@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>What Benchmarks Really Measure — Agentic Madness</title><meta name="description" content="How seven LLM benchmarks work: tasks, verification, metrics and run conditions. What release-table percentages mean, and how to compare models on your own work."><meta name="google-site-verification" content="QAlcIxzeUEj-Bz4RAMF-JlXkKNdyJYGy_0wqJb3vkJM"><meta name="yandex-verification" content="e8970f777efe10f8"><meta name="msvalidate.01" content="9D9E6ACCE65FF9F6845810A7A17249B0"><link rel="canonical" href="https://agentic-madness.com/en/posts/what-benchmarks-really-measure/"><link rel="alternate" hreflang="en" href="https://agentic-madness.com/en/posts/what-benchmarks-really-measure/"><link rel="alternate" hreflang="ru" href="https://agentic-madness.com/ru/posts/kak-ustroeny-benchmarki-llm/"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="alternate" type="application/rss+xml" title="Agentic Madness" href="/en/rss.xml"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"What Benchmarks Really Measure","description":"How seven LLM benchmarks work: tasks, verification, metrics and run conditions. What release-table percentages mean, and how to compare models on your own work.","inLanguage":"en","datePublished":"2026-11-02T00:00:00.000Z","mainEntityOfPage":"https://agentic-madness.com/en/posts/what-benchmarks-really-measure/","image":"https://agentic-madness.com/media/04-benchmarks/en/cover-en.png","author":{"@type":"Person","@id":"https://agentic-madness.com/#author","name":"Author of Agentic Madness","url":"https://agentic-madness.com/en/about/"}}</script><meta property="og:type" content="article"><meta property="og:title" content="What Benchmarks Really Measure — Agentic Madness"><meta property="og:description" content="How seven LLM benchmarks work: tasks, verification, metrics and run conditions. What release-table percentages mean, and how to compare models on your own work."><meta property="og:url" content="https://agentic-madness.com/en/posts/what-benchmarks-really-measure/"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://agentic-madness.com/media/04-benchmarks/en/cover-en.png"><meta property="og:image:alt" content="Two figures turn the time, reasoning and attempt knobs behind a benchmark table."><meta property="og:image:width" content="1254"><meta property="og:image:height" content="1254"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="What Benchmarks Really Measure — Agentic Madness"><meta name="twitter:description" content="How seven LLM benchmarks work: tasks, verification, metrics and run conditions. What release-table percentages mean, and how to compare models on your own work."><meta name="twitter:image" content="https://agentic-madness.com/media/04-benchmarks/en/cover-en.png"><meta name="twitter:image:alt" content="Two figures turn the time, reasoning and attempt knobs behind a benchmark table."><script>
+    // Set the saved choice before paint; first visits always start in light.
+    let savedTheme;
+    try { savedTheme = localStorage.getItem('ab-theme'); } catch {}
+    document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
+  </script><link rel="stylesheet" href="/_astro/Base.DkuzZ1Ej.css"><link rel="stylesheet" href="/_astro/_slug_.D-mMn6Of.css"></head><body><div class="site"><a class="skip" href="#main">Skip to content</a><header class="site-head shell" id="top"><a class="brand" href="/en/" aria-label="Agentic Madness — home"><svg class="logo" viewBox="140 298 802 519" aria-hidden="true"><g transform="translate(-44.5 54)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M466 519 C458 437 397 395 323 411 C242 429 211 517 242 593 C274 669 371 692 434 638 C484 595 491 511 457 456 C424 405 349 392 286 429 C226 465 211 548 248 614" stroke="currentColor" stroke-width="53"></path><path d="M434 638 C452 661 477 674 507 671" stroke="currentColor" stroke-width="46"></path><path d="M674 430 C618 500 626 610 700 669 C780 733 897 689 926 586 C956 482 890 383 792 378 C743 375 701 394 674 430 M760 382 C805 323 868 287 939 274" stroke="currentColor" stroke-width="59"></path><path d="M327 509 L373 540 L327 571" stroke="#25FF4F" stroke-width="23"></path><path d="M782 550 H838" stroke="currentColor" stroke-width="23"></path></g></svg><span>Agentic Madness</span></a><div class="header-tools"><nav class="navigation" aria-label="Main navigation"><a class="active" href="/en/#posts">Articles</a><a class="external-link" href="https://t.me/agentic_madness" target="_blank" rel="noopener">Telegram <span class="external-arrow" aria-hidden="true">↗</span></a></nav><a class="language" href="/ru/posts/kak-ustroeny-benchmarki-llm/" aria-label="Читать на русском" hreflang="ru" lang="ru"><span class="ink-link">RU</span></a><button class="theme-toggle" type="button" aria-label="Switch to dark theme" data-to-dark="Switch to dark theme" data-to-light="Switch to light theme" title="Switch to dark theme"><span class="moon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.4A8.6 8.6 0 0 1 8.6 3.7 8.6 8.6 0 1 0 20.3 15.4Z"></path></svg></span><span class="sun"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"></path></svg></span></button></div></header><main id="main" class="article-layout shell" data-astro-cid-ddgcoj2e><article class="article" data-astro-cid-ddgcoj2e><header class="article-head" data-astro-cid-ddgcoj2e><a class="back-link" href="/en/#posts" data-astro-cid-ddgcoj2e>← All articles</a><div class="meta" data-astro-cid-ddgcoj2e><span data-astro-cid-ddgcoj2e>#BENCHMARKS</span><time datetime="2026-11-02T00:00:00.000Z" data-astro-cid-ddgcoj2e>2 November 2026</time><span data-astro-cid-ddgcoj2e>24 min read</span></div><h1 data-astro-cid-ddgcoj2e>What Benchmarks Really Measure</h1><p class="article-author" data-astro-cid-ddgcoj2e><a class="ink-link" rel="author" href="/en/about/" data-astro-cid-ddgcoj2e>Author of Agentic Madness</a></p><p class="article-deck" data-astro-cid-ddgcoj2e>Higher Scores, Same Model</p></header><details class="mobile-contents"><summary>Contents</summary><nav aria-label="Contents"><a href="#behind-the-impressive-percentages"><span class="contents-label">Behind the impressive percentages</span></a><a href="#deepswe-v11-extend-an-existing-project"><span class="contents-label">DeepSWE v1.1: extend an existing project</span></a><a href="#terminal-bench-science-perform-a-scientific-task-in-a-terminal"><span class="contents-label">Terminal-Bench Science: perform a scientific task in a terminal</span></a><a href="#harveys-legal-agent-benchmark-prepare-a-document-against-a-checklist"><span class="contents-label">Harvey’s Legal Agent Benchmark: prepare a document against a checklist</span></a><a href="#graphwalks-follow-connections-through-a-long-text"><span class="contents-label">GraphWalks: follow connections through a long text</span></a><a href="#lvbench-answer-a-question-about-a-long-video"><span class="contents-label">LVBench: answer a question about a long video</span></a><a href="#osworld-complete-a-task-on-a-computer"><span class="contents-label">OSWorld: complete a task on a computer</span></a><a href="#vals-index-combine-several-tests-into-one-score"><span class="contents-label">Vals Index: combine several tests into one score</span></a><a href="#an-alternative-to-other-peoples-tables-benchmark-your-own-code"><span class="contents-label">An alternative to other people’s tables: benchmark your own code</span></a><a href="#conclusion"><span class="contents-label">Conclusion</span></a><a href="#sources"><span class="contents-label">Sources</span></a></nav></details><div class="prose" id="article-body" data-astro-cid-ddgcoj2e><h2 id="behind-the-impressive-percentages">Behind the impressive percentages</h2>
+<figure class="article-illustration" data-illustration="00">
+  <a href="/media/04-benchmarks/en/00-en.png"><img src="/media/04-benchmarks/en/00-en.png.1778.webp" srcset="/media/04-benchmarks/en/00-en.png.480.webp 480w, /media/04-benchmarks/en/00-en.png.960.webp 960w, /media/04-benchmarks/en/00-en.png.1778.webp 1778w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1778" height="885" alt="Benchmarks in an announcement and why scores change: task freshness, project complexity and evaluation conditions" loading="lazy" decoding="async"></a>
+</figure>
+<p>Whenever a major model drops, everyone talks about its benchmark scores, debating and comparing them. I’ve run into the same situation more than once: the benchmarks suggest a breakthrough, almost a frontier model for the price of a slice of pizza, but using it is a disappointment from start to finish (unfortunately, this has happened to me especially often with Chinese models).</p>
+<p>Of course, in real work, these judgments are very subjective and vary from person to person. But we still need some way to compare models, evaluate them and improve them—which means we need benchmarks. And we need fair, equal conditions for comparison. The test sets themselves should expose real, current problems in their field, rather than being tests for the sake of testing.</p>
+<p>But that’s a subject for another day. What a benchmark should look like—say, for coding—and what it should include to assess a model on the tasks programmers face every day is a big topic of its own. It’s a difficult question, and much of it is open to debate. Benchmarks themselves help set the direction for today’s labs, but does a place in a table really determine how good a model is for us, its everyday users? In this article, we’ll look at leading benchmarks: how they work, their subtleties and pitfalls, and the tricks developers use to make a release look better.</p>
+<ul>
+<li><strong>Old tasks versus new ones (<a href="https://livecodebench.github.io/">LiveCodeBench monitoring</a>).</strong> In presentations, models score 80–85% on algorithmic tasks from LeetCode and Codeforces. The authors of <a href="https://arxiv.org/abs/2403.07974">LiveCodeBench</a> split tasks by publication date. They found that high performance holds up until the model’s training cutoff date. On equally difficult competition problems published a couple of months after release, accuracy drops by half: much of what the test measures is memory of solutions from the training data.</li>
+<li><strong>Local edits versus commercial projects (<a href="https://arxiv.org/abs/2502.12115">OpenAI’s SWE-Lancer</a> and <a href="https://scale.com/leaderboard/swe_bench_pro_public">Scale AI’s SWE-bench Pro</a>).</strong> SWE-bench Verified, a popular test on which models solve 75–80% of tasks, consists largely of small, single-file changes in well-known Python libraries (<a href="https://epoch.ai/blog/what-skills-does-swe-bench-verified-evaluate">Epoch AI’s analysis</a>). When those same models faced real Upwork contracts and large repositories with dozens of interdependent files in SWE-Lancer and SWE-bench Pro, the share of tasks solved fell to 15–26%.</li>
+</ul>
+<p>Similar questions arise within a single table. In the September announcement for <a href="https://deepmind.google/models/model-cards/gemini-4-argon/">Gemini 4 Argon</a>, 91.7% for video understanding sits alongside 19.6% for legal tasks. Read both numbers as the share of correct answers, and it looks as though the model has almost mastered video but struggles badly with documents. Yet the first test checks a single selected answer letter, while the second checks a long list of requirements against a completed contract, where one omission wipes out the score for the whole task.</p>
+<p>On October 28, Google <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/">introduced Gemini 4 Carbon</a>. The table changed along with the model: some tests disappeared, while others acquired different versions or result sources. Even the older Argon received different numbers in the October table. To understand what changed, we need to understand how these scores are produced.</p>
+<p>We’ll do that by examining seven benchmarks from the Argon table: coding, scientific work in a terminal, legal documents, long context, video, computer use and a composite index. In the relevant sections, we’ll also look at Carbon’s results.</p>
+<p>Below are selected rows from the original Argon table. The numbers and versions are preserved as they stood at the September release.</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>What the system does</th>
+<th>Argon</th>
+<th>A competitor in Google’s table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DeepSWE v1.1</td>
+<td>Extends an existing project</td>
+<td>77.9%</td>
+<td>Opus 5.5 — 74.2%</td>
+</tr>
+<tr>
+<td>Terminal-Bench Science 0.1</td>
+<td>Performs a scientific task in a terminal</td>
+<td>57.6%</td>
+<td>Astra — 68.1%</td>
+</tr>
+<tr>
+<td>Harvey’s Legal Agent Benchmark</td>
+<td>Prepares a legal document</td>
+<td>19.6%</td>
+<td>Fable 5.1 — 6.7%</td>
+</tr>
+<tr>
+<td>GraphWalks, up to 128K tokens</td>
+<td>Finds connections in a long text</td>
+<td>99.7%</td>
+<td>Astra — 98.7%</td>
+</tr>
+<tr>
+<td>GraphWalks, 256K–1M tokens</td>
+<td>Searches a longer input</td>
+<td>84.2%</td>
+<td>Astra — 71.8%</td>
+</tr>
+<tr>
+<td>LVBench</td>
+<td>Answers questions about long videos</td>
+<td>91.7%</td>
+<td>Astra — 87.5%</td>
+</tr>
+<tr>
+<td>OSWorld 2.0, offline snapshot</td>
+<td>Performs a task on a computer</td>
+<td>69.2%</td>
+<td>Astra — 72.6%</td>
+</tr>
+<tr>
+<td>Vals Index</td>
+<td>Combines results from several tests</td>
+<td>68.9%</td>
+<td>Opus 5.5 — 67.0%</td>
+</tr>
+</tbody>
+</table>
+<p>GraphWalks has two rows for different context lengths, so there are eight rows but seven benchmarks. The last column shows individual comparison models chosen by Google itself.</p>
+<p>Many of these tests involve an <strong>agent</strong>: the model receives tools—a terminal, browser or file editor—takes an action, sees the result and chooses its next step. The program that manages this loop and limits its runtime is called a <strong>harness</strong>. Once the agent finishes, a <strong>verifier</strong> (or evaluator) checks the result:</p>
+<p><code>Run: task + tools in the harness → agent steps → final artifact (answer, patch or files)</code></p>
+<p><code>Verification: final artifact → checks under the benchmark's rules → a number in the table</code></p>
+<p>To explain how each test works, I’ll use small examples of my own. They illustrate the task; they are not actual items from private evaluation sets.</p>
+<h2 id="deepswe-v11-extend-an-existing-project">DeepSWE v1.1: extend an existing project</h2>
+<figure class="article-illustration" data-illustration="01">
+  <a href="/media/04-benchmarks/en/01-en.png"><img src="/media/04-benchmarks/en/01-en.png.1928.webp" srcset="/media/04-benchmarks/en/01-en.png.480.webp 480w, /media/04-benchmarks/en/01-en.png.960.webp 960w, /media/04-benchmarks/en/01-en.png.1928.webp 1928w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1928" height="815" alt="DeepSWE: a project, the agent under test, a Git patch and verification in a clean environment" loading="lazy" decoding="async"></a>
+</figure>
+<p>Imagine a command-line utility that batch-renames photos by the date they were taken. Someone opens an issue in the project repository:</p>
+<blockquote>
+<p>Add a <code>--dry-run</code> flag (preview mode). The program should print the proposed renamings (<code>IMG_01.jpg -&gt; 2026-10-28_01.jpg</code>) without changing the files on disk. Normal renaming without the flag should continue to work as before.</p>
+</blockquote>
+<p>In <a href="https://github.com/datacurve-ai/deep-swe">DeepSWE v1.1</a>, the agent receives a task like this along with the full project repository. It locates the relevant files, reads the existing code, implements the flag, runs the local tests available to it and fixes errors until the program works. At the end, it records its changes in Git.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Task + repository → agent edits code → git diff → clean container + hidden tests → 1 or 0</code></p>
+<p>The evaluator does not read the agent’s reasoning history or trust whatever the agent has configured on its own machine. Verification runs in isolation, in three steps:</p>
+<ul>
+<li><strong>Transfer the clean patch (<code>git diff</code>).</strong> The system takes only the textual changes to the files and applies them to a pristine copy of the repository in a separate container. If the agent installed an extra library or created a temporary file but did not include it in the patch, it will not be present in the evaluation environment.</li>
+<li><strong>Run two groups of hidden automated tests:</strong></li>
+</ul>
+<ol>
+<li><em>New task-specific checks (<code>FAIL_TO_PASS</code>):</em> tests that failed on the original code but must now pass. In our example, they check that <code>--dry-run</code> prints the correct new filenames while leaving the files on disk untouched.</li>
+<li><em>Regression checks (<code>PASS_TO_PASS</code>):</em> existing project tests that ensure the agent has not broken normal renaming without the flag.</li>
+</ol>
+<ul>
+<li><strong>Strict binary scoring.</strong> The verifier does not care whether the agent’s code matches the author’s solution word for word; it checks the program’s behavior through automated tests. If every required check passes, the task receives <code>1</code>. If even one test fails, it receives <code>0</code>.</li>
+</ul>
+<p>This produces <strong>pass@1</strong>: the share of tasks solved on the first independent attempt.</p>
+<aside class="sidenote" role="note" aria-label="Margin note" data-note="attempt"><p>One attempt ≠ one step. The final patch is what counts.</p></aside>
+<blockquote>
+<p>Note that “one attempt” in <code>pass@1</code> means one isolated agent run, from receiving the task to submitting the patch. Within that run, the agent may take dozens of terminal steps, break and fix the code several times in local testing—the final patch is all that counts.</p>
+</blockquote>
+<p>Google’s table gives Argon <strong>77.9%</strong> and Opus 5.5 <strong>74.2%</strong>. But <a href="https://deepmind.google/models/evals-methodology/gemini-4-argon/">Google’s methodology</a> reveals that these numbers were obtained under different conditions: Google ran Argon itself using <code>mini-swe-agent</code>, took Astra’s result from a public leaderboard, and sourced the Claude figures from Anthropic’s model cards. Before attributing the entire 3.7-point gap to the model’s intelligence, it’s worth checking how much the harness settings differed.</p>
+<p>The verifier itself can also be a problem. <a href="https://epoch.ai/benchmarks/deepswe/review">Epoch AI’s audit found issues in at least 23 of DeepSWE’s 113 tasks</a>. Failures most often occurred at the boundary between environments: when an agent changed the project’s test files, applying its patch and restoring the reference tests caused Git conflicts, leading the evaluation script to reject potentially valid solutions. This does not justify a blanket “minus 20 points” correction to every result, but it clearly shows that the checking program can make mistakes too.</p>
+<h2 id="terminal-bench-science-perform-a-scientific-task-in-a-terminal">Terminal-Bench Science: perform a scientific task in a terminal</h2>
+<figure class="article-illustration" data-illustration="02">
+  <a href="/media/04-benchmarks/en/02-en.png"><img src="/media/04-benchmarks/en/02-en.png.2169.webp" srcset="/media/04-benchmarks/en/02-en.png.480.webp 480w, /media/04-benchmarks/en/02-en.png.960.webp 960w, /media/04-benchmarks/en/02-en.png.2169.webp 2169w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="2169" height="725" alt="Terminal-Bench: the agent under test runs a calculation in a terminal and submits output files for verification" loading="lazy" decoding="async"></a>
+</figure>
+<p>Instead of modifying software, let’s give the agent a research calculation. Its working folder contains <code>sensor.csv</code>, a file of noisy signal measurements, and the task says:</p>
+<blockquote>
+<p>Find the signal’s dominant period in seconds, write the number to <code>period.txt</code>, and save a plot of the original time series with its peaks marked as <code>plot.png</code>.</p>
+</blockquote>
+<p>A text answer with a polished explanation of the formula is not enough. The agent must choose a noise-filtering method, write a script, run it on the actual data and leave the completed files in the folder.</p>
+<p><a href="https://www.tbench.ai/news/terminal-bench-science-0-1">Terminal-Bench Science 0.1</a> contains 70 such tasks across scientific fields, from physics and chemistry to bioinformatics. The agent works through a terminal in a prepared Linux environment: it writes Python or C++, runs calculations, examines the output and adjusts its solution.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Task + data in a folder → agent's terminal calculations → output files → verifier script → 1 or 0</code></p>
+<p>Once the agent finishes, a <strong>custom verification script</strong>, written by the authors of that particular scientific task, enters its working directory:</p>
+<ul>
+<li><strong>Check the generated artifacts.</strong> The script checks whether <code>period.txt</code> and <code>plot.png</code> exist at the required paths, whether the image can be read and whether the data follows the required format.</li>
+<li><strong>Compare the numerical answer within a tolerance.</strong> Scientific calculations rarely match down to the last decimal place, so the verifier checks whether the result falls within an allowed error range—for example, a reference of <code>12.40</code> s with a tolerance of ±<code>0.05</code> s. For complex tasks, the verification script may itself run an expensive simulation or recompute a physical model using parameters found by the agent.</li>
+<li><strong>Strict task scoring.</strong> If every condition in the author’s script is satisfied, the task receives <code>1</code>. If even one condition fails—or the checking script itself runs out of time—it receives <code>0</code>.</li>
+</ul>
+<blockquote>
+<p>Notice the two independent timers in this setup: <strong>agent runtime</strong> (how many minutes the model gets to work in the terminal) and the <strong>verifier timeout</strong> (how long the checking script gets to evaluate the completed files).</p>
+</blockquote>
+<aside class="sidenote" role="note" aria-label="Margin note" data-note="timers"><p>Agent runtime and verifier timeout are separate limits.</p></aside>
+<p>That second timer explains a notable footnote in Google’s report: for its Argon run, the company <strong>increased the verification program’s timeout sixfold</strong>. If the checking script runs heavy computations and hits its normal time limit, the agent receives a technical <code>0</code> even for a correct solution.</p>
+<p>As a result, three noticeably different scores appear for the same Argon model on Terminal-Bench Science 0.1:</p>
+<table>
+<thead>
+<tr>
+<th>Publication</th>
+<th>Argon score</th>
+<th>Known run conditions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original Google table</td>
+<td><strong>57.6%</strong></td>
+<td>Google’s own run, verifier timeout increased ×6</td>
+</tr>
+<tr>
+<td><a href="https://www.vals.ai/benchmarks/terminal-bench-science">Vals leaderboard</a></td>
+<td><strong>44.29%</strong></td>
+<td>Independent Vals run using <code>mini-swe-agent</code></td>
+</tr>
+<tr>
+<td><a href="https://deepmind.google/models/gemini/">Carbon table</a></td>
+<td><strong>52.9%</strong></td>
+<td>Result sourced from Artificial Analysis</td>
+</tr>
+</tbody>
+</table>
+<p>The model and benchmark name are identical in all three rows, but the measurements differ. Google does not disclose every parameter of its internal run, Vals has its own harness and repetition rules, and in the <a href="https://deepmind.google/models/evals-methodology/gemini-4-carbon/">Carbon methodology</a>, Google switched from its own measurement to Artificial Analysis figures. We cannot attribute the difference between 57.6% and 44.29% solely to the sixfold timeout increase; that would require changing only this parameter while holding everything else constant. But the practical lesson is clear: a benchmark name alone, without harness and verifier settings, does not define a common comparison scale.</p>
+<h2 id="harveys-legal-agent-benchmark-prepare-a-document-against-a-checklist">Harvey’s Legal Agent Benchmark: prepare a document against a checklist</h2>
+<figure class="article-illustration" data-illustration="03">
+  <a href="/media/04-benchmarks/en/03-en.png"><img src="/media/04-benchmarks/en/03-en.png.1846.webp" srcset="/media/04-benchmarks/en/03-en.png.480.webp 480w, /media/04-benchmarks/en/03-en.png.960.webp 960w, /media/04-benchmarks/en/03-en.png.1846.webp 1846w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1846" height="852" alt="HLAB: two judges check a document; the task's contribution is the average of their strict scores" loading="lazy" decoding="async"></a>
+</figure>
+<p>Let’s move from code to documents. Imagine a folder containing a draft software development contract and an email from the client. The lawyer’s assignment is:</p>
+<blockquote>
+<p>Amend the contract: set the notice period for unilateral termination to 30 calendar days, leave the confidentiality section unchanged, remove the early-exit penalty clause and save a clean final document.</p>
+</blockquote>
+<p>In <a href="https://www.harvey.ai/blog/introducing-harveys-legal-agent-benchmark">Harvey’s Legal Agent Benchmark</a>, the agent receives legal assignments like this along with case materials. Saying “I’ve fixed everything” in chat is not enough. It must edit and submit completed files without introducing contradictory terms of its own.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Assignment + case files → agent edits document → 2 judge models check the rubric → 100% of criteria = 1, otherwise 0</code></p>
+<p>A simple string-matching script cannot evaluate a legal contract: the same legal provision can be correctly expressed in a dozen different ways. So the <a href="https://www.vals.ai/benchmarks/hlab-v1">archived Vals v1 protocol</a>—the source of the <strong>19.6%</strong> in Argon’s table—uses an expert rubric and two judge models:</p>
+<ul>
+<li><strong>An expert checklist (rubric).</strong> For each task, lawyers prepared specific checks in advance: what must appear in the final document, what must remain untouched and what must be absent. Suppose our example has four criteria:</li>
+</ul>
+<ol>
+<li>The termination notice period is changed to 30 days.</li>
+<li>The wording defining confidential information is fully preserved.</li>
+<li>The early-termination penalty clause is removed.</li>
+<li>The structure and numbering of the contract’s other sections remain intact.</li>
+</ol>
+<ul>
+<li><strong>Independent review by two judges.</strong> Two different LLM judges independently read the agent’s document and mark each of the four criteria as passed or failed.</li>
+<li><strong>An all-or-nothing rule for the task (Task Resolution).</strong> For an individual judge, the whole task receives <code>1</code> only if the agent satisfies <strong>every criterion</strong> for that assignment: four out of four. If it handles three perfectly but forgets to remove one sentence about the penalty, the judge gives the entire task <code>0</code>.</li>
+<li><strong>Average the two judges’ scores.</strong> The task’s final score is the arithmetic mean of the judges’ verdicts. If Judge A accepts all four requirements (task score <code>1</code>) but Judge B finds a flaw in one (three out of four, task score <code>0</code>), the task contributes <code>(1 + 0) / 2 = 0.5</code> to the benchmark.</li>
+</ul>
+<blockquote>
+<p>This mechanism explains the huge gap between two metrics from the same run on the archived Vals page: <strong>about 94.0% on individual criteria but just 19.6% on full task resolution</strong>. The model meets more than nine requirements out of ten, yet makes at least one slip in almost every long document—and receives <code>0</code> under strict task scoring.</p>
+</blockquote>
+<p>Vals later released <a href="https://www.vals.ai/benchmarks/hlab">HLAB-Vals-1.1</a>, in which Argon’s strict score rose from 19.6% to <strong>27.08%</strong>. The model itself had not changed between measurements: the benchmark authors cleaned up data errors, fixed the harness and changed judge aggregation rules for the auxiliary metric. The increase across versions therefore reflects repairs to the measuring instrument, rather than a smarter model.</p>
+<p>In practical use, what matters most is which criteria the agent gets wrong. Missing a minor formatting requirement and dropping a crucial liability clause both receive the same <code>0</code> in the benchmark, but carry very different risks in a real transaction.</p>
+<h2 id="graphwalks-follow-connections-through-a-long-text">GraphWalks: follow connections through a long text</h2>
+<figure class="article-illustration" data-illustration="04">
+  <a href="/media/04-benchmarks/en/04-en.png"><img src="/media/04-benchmarks/en/04-en.png.1719.webp" srcset="/media/04-benchmarks/en/04-en.png.480.webp 480w, /media/04-benchmarks/en/04-en.png.960.webp 960w, /media/04-benchmarks/en/04-en.png.1719.webp 1719w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1719" height="915" alt="GraphWalks: three correct nodes out of four produce an F1 score of 75 percent" loading="lazy" decoding="async"></a>
+</figure>
+<p>There is no terminal or file editing in this test. It measures the model’s ability to retain and connect facts within an enormous context window.</p>
+<p>Imagine a simple network of flights between cities, written as text:</p>
+<blockquote>
+<p>City A has direct flights to B and C. From B, you can fly to D and E. From C, to F and G.
+Question: which cities can you reach from A in <strong>exactly two flights</strong> (at a depth of two hops)?</p>
+</blockquote>
+<p>Draw the network on paper and the answer is obvious: one step takes us to <code>{B, C}</code>, and the second takes us to <strong><code>{D, E, F, G}</code></strong>. The first-level cities, <code>B</code> and <code>C</code>, do not belong in the answer.</p>
+<p><a href="https://huggingface.co/datasets/openai/graphwalks">GraphWalks</a> gives the model the same breadth-first search (<em>BFS</em>) task, but at an extreme scale. Instead of seven clear letters, the input is up to a million tokens long, with thousands of graph edges and random identifiers such as <code>8f3a -&gt; 19c4</code> listed in a mixed order. Python calls are not allowed: the model must follow the chains of connections in the text and return the final node list in a single response.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Long text graph + question → model's node list → set comparison (precision and recall) → F1 score</code></p>
+<p>There are no judge models here. A deterministic formula checks the answer using <strong>F1</strong>, which gives credit for partial overlap between two lists:</p>
+<ol>
+<li><strong>Compare with the reference set.</strong> Suppose the correct answer in our example contains four nodes: <code>{D, E, F, G}</code>. The model returns four nodes too: <code>{D, E, F, X}</code>. It found three correct nodes, missed <code>G</code> and incorrectly added <code>X</code>.</li>
+<li><strong>Calculate precision and recall:</strong>
+<ul>
+<li><em>Precision</em> is the fraction of returned nodes that are correct: three out of four (<code>75%</code>).</li>
+<li><em>Recall</em> is the fraction of required nodes the model found: three out of four (<code>75%</code>).</li>
+</ul>
+</li>
+</ol>
+<p><strong>Calculate F1.</strong> The harmonic mean of precision and recall gives this answer <strong>75% (0.75 points)</strong>. See <a href="https://epoch.ai/benchmarks/graphwalks/review">Epoch AI’s detailed explanation of the metric</a>.</p>
+<blockquote>
+<p>Notice the difference in scoring strictness: in DeepSWE or Harvey’s legal test, an answer with one missing detail and one extra insertion would receive <code>0</code>. In GraphWalks, it earns 75% credit. So the final <strong>84.2%</strong> in the table does not mean the model solved 84.2% of the graphs perfectly; it is the mean F1 across the sample.</p>
+</blockquote>
+<aside class="sidenote" role="note" aria-label="Margin note" data-note="f1"><p>75% F1 ≠ 75% of tasks fully solved.</p></aside>
+<p>In Argon’s table, the test is split into two independent rows by input length: the model scores <strong>99.7%</strong> on texts up to 128K tokens, and <strong>84.2%</strong> on the long range of 256K–1M tokens, versus Astra’s 71.8%. Carbon’s release removed the short row and showed a jump on the long range (256K–1M tokens, BFS F1): <strong>96.2% for Carbon versus 84.2% for Argon</strong>.</p>
+<p>A precise methodological label such as “BFS F1 at 256K–1M” is much more honest than the marketing promise “the model understands a million tokens.” It states exactly what was tested: how the model collects connected identifiers throughout its context window. That is not enough for analyzing a real hundred-page contract, where the model must also handle ambiguous wording and assess the risk of each omission.</p>
+<h2 id="lvbench-answer-a-question-about-a-long-video">LVBench: answer a question about a long video</h2>
+<figure class="article-illustration" data-illustration="05">
+  <a href="/media/04-benchmarks/en/05-en.png"><img src="/media/04-benchmarks/en/05-en.png.1834.webp" srcset="/media/04-benchmarks/en/05-en.png.480.webp 480w, /media/04-benchmarks/en/05-en.png.960.webp 960w, /media/04-benchmarks/en/05-en.png.1834.webp 1834w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1834" height="858" alt="LVBench: one frame per second captures an event that one frame every 30 seconds may miss" loading="lazy" decoding="async"></a>
+</figure>
+<p>Imagine an hour of footage from a street camera. At minute 24, a person in a coat opens a red umbrella for a couple of seconds, closes it and immediately hands a bag to a passerby. The model receives a question with four possible answers:</p>
+<blockquote>
+<p>What did the person do immediately after opening the red umbrella?</p>
+<ul>
+<li><strong>A)</strong> Got on a bus</li>
+<li><strong>B)</strong> Closed a window</li>
+<li><strong>C)</strong> Handed over a bag</li>
+<li><strong>D)</strong> Sat on a bench</li>
+</ul>
+</blockquote>
+<p><a href="https://github.com/zai-org/LVBench">LVBench</a> works exactly this way: it is a set of multiple-choice questions about long videos, ranging from tens of minutes to several hours. The test checks the ability to locate and connect visual events over time, rather than transcribe a call’s audio track.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Video → frames sampled before the run → choose A/B/C/D → compare with answer key → 1 or 0</code></p>
+<p>The evaluator itself is extremely simple. The interesting part happens <strong>before</strong> the model sees the question:</p>
+<ul>
+<li><strong>Step 0. Prepare the input (frame sampling).</strong> Modern models do not watch an hour-long file as a continuous film. The harness first extracts individual image frames and feeds them to the model.</li>
+<li><strong>Step 1. Choose an answer.</strong> The model analyzes the supplied frames and returns one letter: <code>C</code> in our example.</li>
+<li><strong>Step 2. Check the answer key.</strong> The verifier compares the model’s letter with the correct answer in the annotations. A match gives <code>1</code>, otherwise <code>0</code>. The final <strong>accuracy</strong> is simply the percentage of correct answers.</li>
+</ul>
+<p>In Argon’s table, Google’s model scores <strong>91.7%</strong>, versus <strong>87.5%</strong> for Astra. But the testing footnote reveals a crucial difference at step zero: Gemini received video sampled at <strong>one frame per second (1 FPS)</strong>, while Astra, Opus and Fable had hard limits of <strong>800, 600 and 300 frames</strong> for the entire video, respectively, because of their API restrictions.</p>
+<p>Consider the arithmetic: an hour-long video contains 3,600 seconds. At one frame per second, the system receives 3,600 consecutive samples; a two-second bag handover is captured in two images. With a budget of 300 frames for that same hour, images are sampled every 12 seconds. A brief action can easily fall into the blind spot between neighboring frames: the model never sees a bag in the pictures and has to guess among four options.</p>
+<aside class="sidenote" role="note" aria-label="Margin note" data-note="frames"><p>If the event isn't in the frames, the model won't see it.</p></aside>
+<blockquote>
+<p>We cannot claim that the entire gap between 91.7% and 87.5% comes from frame density alone: Google does not disclose every detail of preprocessing and image compression. But when one system receives a detailed storyboard and another gets sparse screenshots, the test measures both the model’s video understanding and the throughput of its interface.</p>
+</blockquote>
+<p>LVBench disappeared from the new Carbon table, but the lesson applies broadly: for any multimodal test, always check the resolution and frame rate at which the model was allowed to see the source material.</p>
+<h2 id="osworld-complete-a-task-on-a-computer">OSWorld: complete a task on a computer</h2>
+<figure class="article-illustration" data-illustration="06">
+  <a href="/media/04-benchmarks/en/06-en.png"><img src="/media/04-benchmarks/en/06-en.png.1802.webp" srcset="/media/04-benchmarks/en/06-en.png.480.webp 480w, /media/04-benchmarks/en/06-en.png.960.webp 960w, /media/04-benchmarks/en/06-en.png.1802.webp 1802w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1802" height="873" alt="OSWorld: file verification awards partial credit even when the requested PDF is missing" loading="lazy" decoding="async"></a>
+</figure>
+<p>Now let’s put the agent in front of an ordinary operating system’s graphical interface and give it an office task:</p>
+<blockquote>
+<p>Open the sales spreadsheet on the desktop, sort rows by revenue in descending order, calculate the total in the bottom cell, create a chart and export the finished report to <code>report.pdf</code>.</p>
+</blockquote>
+<p>In <a href="https://github.com/xlang-ai/OSWorld-V2">OSWorld</a>, the agent works inside a real virtual machine. In Google’s configuration, it sees the screen through screenshots and controls the computer with a virtual mouse and keyboard: clicking icons, opening menus, entering text and saving files.</p>
+<p><strong>How verification works:</strong></p>
+<p><code>Assignment + virtual machine → screenshot–click loop → script checks files and OS state → score from 0 to 1</code></p>
+<p>The OSWorld evaluator does not track the cursor’s path or penalize the agent for opening the wrong menu first. When the agent says it has finished—or exhausts its step budget—a verification script runs inside the virtual machine and checks the <strong>system’s final state</strong>:</p>
+<ul>
+<li><strong>Inspect artifacts and settings.</strong> The script directly reads saved files, application configuration records, database contents or open windows.</li>
+<li><strong>Combine weighted checkpoints (Partial Score).</strong> In many OSWorld tasks, the score combines several checkpoints with predefined weights. Suppose our illustration has four equally weighted checks, worth <code>0.25</code> each:</li>
+</ul>
+<ol>
+<li>The spreadsheet rows are sorted correctly: <code>+0.25</code>.</li>
+<li>The bottom cell contains the correct total: <code>+0.25</code>.</li>
+<li>The sheet contains a chart using the required columns: <code>+0.25</code>.</li>
+<li>The file <code>report.pdf</code> exists on disk: <code>0</code>. The agent saved the spreadsheet but forgot to click “Export to PDF.”</li>
+</ol>
+<ul>
+<li><strong>Partial credit without completing the task.</strong> This attempt receives <strong>0.75 points (75%)</strong>, even though the user’s final goal—getting a PDF file—was never achieved. In the actual OSWorld set, rules and weights depend on the task: some scores are binary (<code>0</code> or <code>1</code>), while others are fractional.</li>
+</ul>
+<p>Argon’s table reports <strong>69.2%</strong> on the offline OSWorld 2.0 snapshot. This is a mean score that includes partial credit, rather than the share of assignments completed from start to finish. Google’s footnote also specifies <code>maxed over 3 runs with a single attempt per run</code>. The public wording does not fully clarify whether this means the best of three complete benchmark runs or the best of three attempts for each individual task.</p>
+<p>Carbon’s release adds a telling example of conditions changing between releases. The <a href="https://deepmind.google/models/gemini/">new table</a> uses <strong>OSWorld 2.1</strong>, with <strong>81.5%</strong> for Carbon and <strong>74.7%</strong> for the older Argon, rather than its previous 69.2%. The <a href="https://deepmind.google/models/evals-methodology/gemini-4-carbon/">Carbon methodology</a> explicitly says that the agent harness was updated along with the benchmark version: it now provides a history of previous screenshots.</p>
+<p>The comparison looks like this:</p>
+<p><code>Argon in the old table (OSWorld 2.0, old harness): 69.2%</code></p>
+<p><code>Argon in the new table (OSWorld 2.1, screenshot-history harness): 74.7% (+5.5 percentage points without changing the model)</code></p>
+<p><code>Carbon in the new table (OSWorld 2.1, screenshot-history harness): 81.5% (+6.8 percentage points from the new model)</code></p>
+<p>Simply comparing 69.2% from September’s announcement with 81.5% from October’s would attribute almost twice as much improvement to the new model as the comparison under the same harness actually shows: 74.7% → 81.5%.</p>
+<h2 id="vals-index-combine-several-tests-into-one-score">Vals Index: combine several tests into one score</h2>
+<figure class="article-illustration" data-illustration="07">
+  <a href="/media/04-benchmarks/en/07-en.png"><img src="/media/04-benchmarks/en/07-en.png.1773.webp" srcset="/media/04-benchmarks/en/07-en.png.480.webp 480w, /media/04-benchmarks/en/07-en.png.960.webp 960w, /media/04-benchmarks/en/07-en.png.1773.webp 1773w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1773" height="887" alt="Vals Index: mean scores for each sector are multiplied by sector weights" loading="lazy" decoding="async"></a>
+</figure>
+<p>Unlike the previous six entries, <a href="https://www.vals.ai/benchmarks/vals_index_v2_1">Vals Index</a> is a composite ranking—an aggregator—rather than a separate test with its own tasks. It combines benchmark results across four sectors: finance, coding, law and tax.</p>
+<p>Imagine assessing a candidate on four professional exams, but multiplying each subject’s score by that industry’s share of US GDP when calculating the overall result.</p>
+<p><strong>How scoring works (verification at the index level):</strong></p>
+<p><code>Individual benchmark scores → mean for each of 4 sectors → weighted sum using US economic shares → final index</code></p>
+<p>The index has no verification script of its own. Each component test uses its own rules; the legal basket, for instance, includes the HLAB test discussed above. The index then calculates the final number in two steps:</p>
+<ul>
+<li><strong>Step 1. Average within sectors.</strong> Results from all tests in one field—for example, several financial benchmarks—are averaged into a single sector score.</li>
+<li><strong>Step 2. Combine using sector weights.</strong> In Vals Index v2.1, sector scores are combined using weights proportional to the size of those sectors in the US economy. The weights sum to <code>15.3</code>:</li>
+<li><strong>Finance:</strong> weight <code>8.0</code> (<strong>~52.3%</strong> of the final index);</li>
+<li><strong>Coding:</strong> weight <code>5.6</code> (<strong>~36.6%</strong>);</li>
+<li><strong>Law:</strong> weight <code>1.2</code> (<strong>~7.8%</strong>);</li>
+<li><strong>Tax:</strong> weight <code>0.5</code> (<strong>~3.3%</strong>).</li>
+</ul>
+<p>The numbers show that <strong>finance and coding determine almost 89% of the entire index</strong>, leaving law and tax together at about 11%. If a model makes a breakthrough on legal tasks and gains ten points there, the overall Vals Index moves by less than 0.8 points. A gain of just two points on financial tests raises the overall ranking more.</p>
+<aside class="sidenote" role="note" aria-label="Margin note" data-note="weights"><p>Almost 89% of the weight goes to finance and coding.</p></aside>
+<blockquote>
+<p>These weights make sense for a macroeconomic market overview, but may be useless for your particular product. If you are building a service for tax advisers or lawyers, a high composite score driven by financial mathematics says nothing about model quality on your tasks.</p>
+</blockquote>
+<p>Composite indices also make three other release-table practices easy to see:</p>
+<ul>
+<li><strong>Changing the index version between releases.</strong> Argon’s table reports <strong>68.9%</strong>, matching the archived Vals Index v2.1 figure of 68.90%. Carbon’s table is labeled <strong>Vals Index v2.2</strong>, with an updated set of components: Carbon scores <strong>70.4%</strong>, while Argon’s recalculated score is <strong>69.2%</strong>.</li>
+<li><strong>Selecting which competitors appear.</strong> In Carbon’s table, Google compares its model with selected competitors but leaves out Claude Sonnet 5.5. Open the <a href="https://www.vals.ai/benchmarks/vals_index">full Vals Index leaderboard</a> as of October 29 and Sonnet 5.5 is first at <strong>70.85%</strong>, with Carbon second at <strong>70.36%</strong>. First place among the columns in a press release does not always mean first place in the market.</li>
+<li><strong>The hidden cost of a point.</strong> A composite index shows final accuracy but says nothing about the time and tokens spent reasoning. In another popular aggregator, the Artificial Analysis Intelligence Index (<a href="https://artificialanalysis.ai/articles/gemini-4-argon-google-top-three-labs/">September 30 analysis</a>), Argon and Astra both scored <strong>53 points</strong>. Yet Argon used about <strong>62K output tokens</strong> per task on average, versus <strong>27K</strong> for Astra—more than twice as much generation. Carbon’s October table also updated this index to v5.0, where Carbon scores <strong>59 points</strong> and Argon <strong>50</strong>, rather than its previous 53.</li>
+</ul>
+<h2 id="an-alternative-to-other-peoples-tables-benchmark-your-own-code">An alternative to other people’s tables: benchmark your own code</h2>
+<figure class="article-illustration" data-illustration="08">
+  <a href="/media/04-benchmarks/en/08-en.png"><img src="/media/04-benchmarks/en/08-en.png.1780.webp" srcset="/media/04-benchmarks/en/08-en.png.480.webp 480w, /media/04-benchmarks/en/08-en.png.960.webp 960w, /media/04-benchmarks/en/08-en.png.1780.webp 1780w" sizes="(max-width: 760px) calc(100vw - 40px), 760px" width="1780" height="884" alt="Your own benchmark: different models face the same private tasks and automated tests" loading="lazy" decoding="async"></a>
+</figure>
+<p>Instead of making engineering decisions from someone else’s press release, a much more reliable approach is to spend an evening turning your own working code and private tasks into a personal benchmark.</p>
+<p>The idea is simple: every project already has a testing ground—a private repository, a history of fixed bugs, automated tests and real issues from the tracker. No model has seen your private codebase during training, so it cannot copy the answer or coast on a memorized template.</p>
+<p>Set up this evaluation environment once, and every major release brings two practical benefits:</p>
+<ol>
+<li><strong>An objective assessment of new models in 15 minutes.</strong> When a hypothetical Gemini 4 Carbon or a new Claude comes out, you do not need to guess how honest the presentation’s percentages are. Run it on your 30 private tasks and check the actual pass rate within your architecture.</li>
+<li><strong>Lower costs without sacrificing quality.</strong> In practice, a fast, cheap model at $0.50 per million tokens may achieve the same 85% pass rate on your particular pipelines as a heavyweight frontier model at $15, or solve the task in a third as many steps. Your own benchmark lets you move production to a cheaper model using hard numbers rather than intuition.</li>
+</ol>
+<p>You do not have to build this environment entirely by hand. Open tools and simple approaches already exist for generating benchmarks directly from your repository:</p>
+<ul>
+<li><strong><a href="https://github.com/SWE-bench/SWE-smith">SWE-smith</a>, from the creators of SWE-bench at Stanford / Princeton:</strong> an open toolkit that turns a GitHub repository into its own arena (<code>SWE-gym</code>). It sets up the project’s environment, takes working code, automatically generates realistic faults—or reverses earlier pull requests and commits—selects tasks guaranteed to break one or more of your <code>pytest</code> tests, and packages everything into a ready-to-use evaluation set.</li>
+<li><strong><a href="https://r2e.dev/">R2E (Repository to Environment)</a>:</strong> a framework that scans a repository, uses static analysis to extract the relevant dependency slice, and automatically builds <strong>equivalence test harnesses</strong> around your functions. It can help even when a project has few handwritten unit tests and you need to check whether a new model can extend or optimize a method without changing its behavior.</li>
+<li><strong>The “time machine through your own PRs” approach (<code>git revert</code> eval):</strong> the quickest option without external libraries. A script takes 20–30 real private pull requests from recent months where a feature or bug fix included a test. It rolls the implementation back to the parent commit (<code>git checkout &lt;parent_commit&gt;</code>) but keeps the new test, then gives the agent the original tracker issue as its prompt.</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>A percentage in a table describes performance on a particular benchmark under particular verification rules. It is not a universal model rating.</p>
+<p>In GraphWalks and OSWorld, an incomplete answer can earn as much as 75% credit. In Terminal-Bench Science, the score depends on the checking script’s timeout; in LVBench, on frame sampling frequency; in OSWorld 2.1, on whether screenshot history is provided. Vals Index applies sector weights, while the same Intelligence Index score can require more than twice as many output tokens from one model as another.</p>
+<p>Users do not need to understand every checking script. What matters is that benchmark comparisons are possible when measurement conditions are disclosed and results can be reproduced. The people producing the measurements should provide that transparency. In the next article, we’ll examine platforms and organizations that independently evaluate models: what they test and the rules they use to compare results.</p>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2403.07974">LiveCodeBench: Holistic and Contamination Free Evaluation of LLMs for Code</a> and the <a href="https://livecodebench.github.io/">interactive LiveCodeBench leaderboard</a></li>
+<li><a href="https://arxiv.org/abs/2502.12115">SWE-Lancer: Can Frontier LLMs Earn $1 Million from Real-World Freelance Software Engineering? (OpenAI)</a>, the <a href="https://scale.com/leaderboard/swe_bench_pro_public">SWE-bench Pro leaderboard (Scale AI)</a> and <a href="https://epoch.ai/blog/what-skills-does-swe-bench-verified-evaluate">Epoch AI’s analysis of SWE-bench Verified tasks</a></li>
+<li><a href="https://deepmind.google/models/model-cards/gemini-4-argon/">Gemini 4 Argon model card</a> and <a href="https://deepmind.google/models/evals-methodology/gemini-4-argon/">Argon evaluation methodology</a> (Google DeepMind)</li>
+<li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/">Gemini 4 Carbon announcement</a>, <a href="https://deepmind.google/models/gemini/">Gemini model overview</a> and <a href="https://deepmind.google/models/evals-methodology/gemini-4-carbon/">Carbon evaluation methodology</a> (Google / DeepMind)</li>
+<li><a href="https://github.com/datacurve-ai/deep-swe">DeepSWE repository</a> and <a href="https://epoch.ai/benchmarks/deepswe/review">Epoch AI’s review of DeepSWE verification issues</a></li>
+<li><a href="https://www.tbench.ai/news/terminal-bench-science-0-1">Terminal-Bench Science 0.1 announcement</a> and its <a href="https://www.vals.ai/benchmarks/terminal-bench-science">Vals AI benchmark page</a></li>
+<li><a href="https://www.harvey.ai/blog/introducing-harveys-legal-agent-benchmark">Harvey’s Legal Agent Benchmark announcement</a>, <a href="https://www.vals.ai/benchmarks/hlab-v1">archived HLAB v1 protocol</a> and <a href="https://www.vals.ai/benchmarks/hlab">updated HLAB-Vals-1.1</a></li>
+<li><a href="https://huggingface.co/datasets/openai/graphwalks">GraphWalks dataset (OpenAI)</a> and <a href="https://epoch.ai/benchmarks/graphwalks/review">Epoch AI’s review of the GraphWalks metric</a></li>
+<li><a href="https://github.com/zai-org/LVBench">LVBench repository</a></li>
+<li><a href="https://github.com/xlang-ai/OSWorld-V2">OSWorld-V2 repository</a></li>
+<li><a href="https://www.vals.ai/benchmarks/vals_index_v2_1">Vals Index v2.1</a>, the <a href="https://www.vals.ai/benchmarks/vals_index">current Vals Index leaderboard</a> and <a href="https://artificialanalysis.ai/articles/gemini-4-argon-google-top-three-labs/">Artificial Analysis’s Gemini 4 Argon analysis</a></li>
+<li><strong>Tools for building benchmarks from your own code:</strong> <a href="https://github.com/SWE-bench/SWE-smith">SWE-smith</a> and <a href="https://r2e.dev/">R2E (Repository to Environment)</a></li>
+</ul>
+</div><section class="subscribe" aria-label="Follow the next experiments" data-astro-cid-7234nlcp><h2 data-astro-cid-7234nlcp>Follow the next experiments</h2><p data-astro-cid-7234nlcp>Get new articles in English via RSS. More updates and discussion in Russian on Telegram.</p><div data-astro-cid-7234nlcp><a href="/en/rss.xml" data-astro-cid-7234nlcp>RSS</a><a href="https://t.me/agentic_madness" target="_blank" rel="noopener" data-astro-cid-7234nlcp>Follow on Telegram ↗</a></div></section><div class="article-end" data-astro-cid-ddgcoj2e><a href="https://t.me/agentic_madness" target="_blank" rel="noopener" data-astro-cid-ddgcoj2e>Discuss on Telegram ↗</a><a class="back-link" href="/en/#posts" data-astro-cid-ddgcoj2e>← All articles</a></div></article><aside class="contents"><div class="contents-inner"><p class="kicker">Contents</p><nav aria-label="Contents"><a href="#behind-the-impressive-percentages"><span class="contents-label">Behind the impressive percentages</span></a><a href="#deepswe-v11-extend-an-existing-project"><span class="contents-label">DeepSWE v1.1: extend an existing project</span></a><a href="#terminal-bench-science-perform-a-scientific-task-in-a-terminal"><span class="contents-label">Terminal-Bench Science: perform a scientific task in a terminal</span></a><a href="#harveys-legal-agent-benchmark-prepare-a-document-against-a-checklist"><span class="contents-label">Harvey’s Legal Agent Benchmark: prepare a document against a checklist</span></a><a href="#graphwalks-follow-connections-through-a-long-text"><span class="contents-label">GraphWalks: follow connections through a long text</span></a><a href="#lvbench-answer-a-question-about-a-long-video"><span class="contents-label">LVBench: answer a question about a long video</span></a><a href="#osworld-complete-a-task-on-a-computer"><span class="contents-label">OSWorld: complete a task on a computer</span></a><a href="#vals-index-combine-several-tests-into-one-score"><span class="contents-label">Vals Index: combine several tests into one score</span></a><a href="#an-alternative-to-other-peoples-tables-benchmark-your-own-code"><span class="contents-label">An alternative to other people’s tables: benchmark your own code</span></a><a href="#conclusion"><span class="contents-label">Conclusion</span></a><a href="#sources"><span class="contents-label">Sources</span></a></nav><a class="to-top" href="#top">↑ Back to top</a></div></aside></main><footer class="site-foot shell" data-astro-cid-nns7i3if><span data-astro-cid-nns7i3if>Notes on AI agents</span><div class="subscriptions" data-astro-cid-nns7i3if><a href="/en/about/" data-astro-cid-nns7i3if>About the author and project</a><a href="/en/rss.xml" data-astro-cid-nns7i3if>RSS</a><a class="external-link" href="https://t.me/agentic_madness" target="_blank" rel="noopener" data-astro-cid-nns7i3if>Follow on Telegram <span class="external-arrow" aria-hidden="true" data-astro-cid-nns7i3if>↗</span></a></div></footer><script type="module" src="/_astro/_slug_.astro_astro_type_script_index_0_lang.Dk-svYNc.js"></script><script type="module">var e=[...document.querySelectorAll(`.prose h2[id], .prose h3[id]`)],t=document.querySelectorAll(`.contents nav a, .mobile-contents nav a`);function n(){if(!e.length)return;let n=e[0].id;for(let t of e){if(t.getBoundingClientRect().top>96)break;n=t.id}scrollY+innerHeight>=document.documentElement.scrollHeight-2&&(n=e[e.length-1].id),t.forEach(e=>{decodeURIComponent(e.hash.slice(1))===n?e.setAttribute(`aria-current`,`location`):e.removeAttribute(`aria-current`)})}var r=!1;function i(){r||(r=!0,requestAnimationFrame(()=>{r=!1,n()}))}addEventListener(`scroll`,i,{passive:!0}),addEventListener(`resize`,i),addEventListener(`hashchange`,i),n(),document.querySelectorAll(`.mobile-contents a`).forEach(e=>{e.addEventListener(`click`,()=>{document.querySelector(`.mobile-contents`).open=!1})});async function a(){await document.fonts.ready,location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView(),n()}a();</script></div><script type="module">var e=document.querySelector(`.theme-toggle`);if(e){let t=()=>{let t=document.documentElement.dataset.theme===`dark`?e.dataset.toLight:e.dataset.toDark;e.setAttribute(`aria-label`,t),e.title=t};e.addEventListener(`click`,()=>{let e=document.documentElement.dataset.theme===`dark`?`light`:`dark`;document.documentElement.dataset.themeMotion=`ready`,document.documentElement.dataset.theme=e;try{localStorage.setItem(`ab-theme`,e)}catch{}t()}),t()}if(!matchMedia(`(prefers-reduced-motion: reduce)`).matches){let e=new IntersectionObserver(t=>{for(let n of t)!n.isIntersecting||n.intersectionRatio<.2||(n.target.dataset.inkState=`drawn`,e.unobserve(n.target))},{threshold:.2});document.querySelectorAll(`[data-ink-reveal]`).forEach(t=>e.observe(t))}</script></body></html>
